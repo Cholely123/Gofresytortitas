@@ -2,18 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 👈 Esto es clave -->
     <title>Construye tu Montaña de Gofres 🧇</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
             background: #fcefe6;
             text-align: center;
-            padding: 30px;
+            padding: 20px;
             color: #333;
+            margin: 0;
         }
 
         h1 {
             color: #d2691e;
+            font-size: 1.8em;
         }
 
         .tower {
@@ -21,8 +24,9 @@
             flex-direction: column-reverse;
             align-items: center;
             margin: 20px auto;
-            width: 200px;
-            height: 270px;
+            width: 90%;
+            max-width: 220px;
+            min-height: 270px;
             border: 4px dashed #ccc;
             border-radius: 10px;
             padding: 10px;
@@ -30,7 +34,7 @@
         }
 
         .layer {
-            width: 180px;
+            width: 100%;
             height: 60px;
             margin: 5px 0;
             border-radius: 10px;
@@ -44,6 +48,10 @@
 
         .controls {
             margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
         }
 
         .ingredient {
@@ -53,13 +61,15 @@
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
+            flex: 1 1 40%;
+            max-width: 130px;
         }
 
-        .gofre { background-color: #d2691e; }
+        .gofre { background-color: #d2691e; color: white; }
         .choco-blanco { background-color: #fffacd; color: #333; }
-        .choco-leche { background-color: #4b2e2e; }
-        .choco { background-color: #6a3313; }
-        .kitkat { background-color: #8b0000; }
+        .choco-leche { background-color: #4b2e2e; color: white; }
+        .choco { background-color: #6a3313; color: white; }
+        .kitkat { background-color: #8b0000; color: white; }
 
         .submit-btn {
             margin-top: 25px;
@@ -70,30 +80,22 @@
             font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+            max-width: 240px;
         }
 
         .submit-btn:hover {
             background-color: #45a049;
         }
 
-        @media screen and (max-width: 600px) {
+        @media (max-width: 480px) {
             h1 {
-                font-size: 2em;
+                font-size: 1.5em;
             }
-
-            .tower {
-                width: 90%;
-                padding: 10px;
-            }
-
-            .ingredient {
-                font-size: 1em;
-                min-width: 100px;
-            }
-
-            .submit-btn {
-                font-size: 1.1em;
-                padding: 10px 20px;
+            .layer {
+                font-size: 12px;
+                height: 50px;
+                line-height: 50px;
             }
         }
     </style>
@@ -101,9 +103,7 @@
 <body>
     <h1>Construye tu Montaña de Gofres 🧇</h1>
 
-    <div class="tower" id="tower">
-        <!-- Las capas se insertarán aquí -->
-    </div>
+    <div class="tower" id="tower"></div>
 
     <div class="controls">
         <button class="ingredient gofre" onclick="addLayer('Gofre')">Gofre</button>
@@ -116,113 +116,91 @@
 
     <button class="submit-btn" onclick="submitStack()">🥞 Enviar montaña de tortitas 🥞</button>
 
+    <!-- Tu script JavaScript va aquí sin cambios -->
     <script>
-const tower = document.getElementById('tower');
-let stack = [];
+        // (igual que antes)
+        const tower = document.getElementById('tower');
+        let stack = [];
 
-// Mapa de ingredientes a colores
-const ingredientColors = {
-    'Gofre': '#d2691e', // Color de tortita
-    'Nocilla Blanca': '#fffacd', // Color de chocolate blanco
-    'Nocilla Normal': '#4b2e2e', // Color de chocolate negro
-    'Chocogofre': '#6a3313' , // Color de KitKat
-    'KitKat': '#8b0000' // Color de KitKat
-};
+        const ingredientColors = {
+            'Gofre': '#d2691e',
+            'Nocilla Blanca': '#fffacd',
+            'Nocilla Normal': '#4b2e2e',
+            'Chocogofre': '#6a3313',
+            'KitKat': '#8b0000'
+        };
 
-
-// Función para crear una capa visual
-function createLayer(name) {
-    const div = document.createElement('div');
-    div.classList.add('layer');
-    div.textContent = name;
-
-    // Asignar color según el ingrediente
-    div.style.backgroundColor = ingredientColors[name] || '#f0f0f0'; // Color predeterminado si no está en el mapa
-
-    // Si el ingrediente es "Chocolate Blanco", poner el texto de color gris
-    if (name === 'Chocolate Blanco') {
-        div.style.color = '#808080'; // Color gris para el texto
-    }
-
-    return div;
-}
-
-// Función para agregar una capa
-function addLayer(name) {
-    // Contar cuántos "Gofres" hay en el stack
-    const gofresCount = stack.filter(item => item === 'Gofre').length;
-
-    // Validar que no se agreguen más de 3 gofres
-    if (name === 'Gofre' && gofresCount >= 1) {
-        alert('¡No puedes agregar más de 1 gofre!');
-        return;
-    }
-
-    // Validar que no se agreguen más de 5 capas en total
-    if (stack.length >= 3) {
-        alert('¡No puedes agregar más de 3 capas en total!');
-        return;
-    }
-
-    // Crear la capa y agregarla al stack y la torre
-    const layer = createLayer(name);
-    stack.push(name);
-    tower.appendChild(layer);
-}
-
-// Función para eliminar la última capa
-function removeLayer() {
-    if (stack.length > 0) {
-        stack.pop();
-        tower.removeChild(tower.lastChild);
-    }
-}
-
-// Función para enviar la montaña al servidor
-function submitStack() {
-    // Verificar que haya al menos un "Gofre"
-    const gofresCount = stack.filter(item => item === 'Gofre').length;
-    if (gofresCount === 0) {
-        alert('¡Debe haber al menos un gofre!');
-        return;
-    }
-
-    if (stack.length === 0) {
-        alert('¡Agrega al menos una capa!');
-        return;
-    }
-
-    const mesa = prompt("¿Nombre?");
-    if (!mesa) {
-        alert('Debes ingresar un nombre.');
-        return;
-    }
-
-    // Convertir el stack a un string único
-    const descripcion = stack.join(' > ');
-
-    fetch('http://localhost:3000/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            table: mesa,
-            product: [descripcion]  // un solo producto con todo dentro
-        })
-    })
-    .then(res => {
-        if (res.ok) {
-            alert('¡Montaña enviada con éxito! 🧇');
-            stack = [];
-            tower.innerHTML = ''; // Limpiar la torre después de enviar
-        } else {
-            alert('Error al enviar la montaña 😢');
+        function createLayer(name) {
+            const div = document.createElement('div');
+            div.classList.add('layer');
+            div.textContent = name;
+            div.style.backgroundColor = ingredientColors[name] || '#f0f0f0';
+            return div;
         }
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Error de conexión');
-    });
-}
+
+        function addLayer(name) {
+            const gofresCount = stack.filter(item => item === 'Gofre').length;
+            if (name === 'Gofre' && gofresCount >= 1) {
+                alert('¡No puedes agregar más de 1 gofre!');
+                return;
+            }
+            if (stack.length >= 3) {
+                alert('¡No puedes agregar más de 3 capas en total!');
+                return;
+            }
+            const layer = createLayer(name);
+            stack.push(name);
+            tower.appendChild(layer);
+        }
+
+        function removeLayer() {
+            if (stack.length > 0) {
+                stack.pop();
+                tower.removeChild(tower.lastChild);
+            }
+        }
+
+        function submitStack() {
+            const gofresCount = stack.filter(item => item === 'Gofre').length;
+            if (gofresCount === 0) {
+                alert('¡Debe haber al menos un gofre!');
+                return;
+            }
+            if (stack.length === 0) {
+                alert('¡Agrega al menos una capa!');
+                return;
+            }
+
+            const mesa = prompt("¿Nombre?");
+            if (!mesa) {
+                alert('Debes ingresar un nombre.');
+                return;
+            }
+
+            const descripcion = stack.join(' > ');
+
+            fetch('http://localhost:3000/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    table: mesa,
+                    product: [descripcion]
+                })
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert('¡Montaña enviada con éxito! 🧇');
+                    stack = [];
+                    tower.innerHTML = '';
+                } else {
+                    alert('Error al enviar la montaña 😢');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error de conexión');
+            });
+        }
     </script>
 </body>
 </html>
